@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ejercicio CS</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+              crossorigin="anonymous">
+    </head>       
+    <style>
+        div {
+            margin-top: 20px;
+        }
+
+        label{
+            font-weight: bold;
+        }
+
+        #alerta, table{
+            text-align: center;
+        }
+    </style>
+    <body>
+        <div class="container">
+            <center><h1>Tabla de multiplicar</h1></center>
+            <div class="form-group">
+                <label for="num1">Numero 1</label>
+                <input type="text" class="form-control" id="num1" placeholder="Numero de columnas">
+                <div id="msgNum1"></div>
+            </div>
+            <div class="form-group">
+                <label for="num2">Numero 2</label>
+                <input type="text" class="form-control" id="num2" placeholder="Numero de filas">
+                <div id="msgNum2"></div>
+            </div>
+            <button type="button" name="enviar" value="Enviar" id="crear" class="btn btn-success" disabled>Enviar</button>
+            <button type="reset" name="limpiar" value="Limpiar" id="limpiar" class="btn btn-danger">Limpiar</button>
+            <div id="alerta" class=""></div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="tabla">
+
+                </table>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+
+                function isNormalInteger(str) {
+                    return /^[0]*[1-9][0-9]*$/.test(str);
+                }
+
+
+                $("#num2").keyup(function () {
+                    if ((isNormalInteger($("#num2").val())) && ($("#num2").val() <= 100)) {
+                        $("#msgNum2").attr("class", "");
+                        $("#num2").css("border-color", "green");
+                        $("#msgNum2").empty();
+
+                        if ((isNormalInteger($("#num1").val())) && ($("#num1").val() <= 100)) {
+                            $("#crear").attr("disabled", false);
+                        }
+                    } else {
+                        $("#msgNum2").attr("class", "alert alert-danger");
+                        $("#msgNum2").empty().append("Debe introducir numeros enteros entre 1 y 100 (ambos incluidos).");
+                        $("#num2").css("border-color", "red");
+                        $("#crear").attr("disabled", true);
+                    }
+                });
+
+                $("#num1").keyup(function () {
+                    if ((isNormalInteger($("#num1").val())) && ($("#num1").val() <= 100)) {
+                        $("#msgNum1").attr("class", "");
+                        $("#num1").css("border-color", "green");
+                        $("#msgNum1").empty();
+                        if ((isNormalInteger($("#num2").val())) && ($("#num2").val() <= 100)) {
+                            $("#crear").attr("disabled", false);
+                        }
+                    } else {
+                        $("#msgNum1").attr("class", "alert alert-danger");
+                        $("#msgNum1").empty().append("Debe introducir numeros enteros entre 1 y 100 (ambos incluidos).");
+                        $("#num1").css("border-color", "red");
+                        $("#crear").attr("disabled", true);
+                    }
+                });
+
+
+
+                $("#crear").click(function () {
+                    $("#alerta").attr("class", "");
+                    var num1 = $("#num1").val();
+                    var num2 = $("#num2").val();
+                    $("#tabla").empty();
+                    for (g = 1; g <= num1; g++) {
+                        $("#tabla").append("<tr>");
+                        for (h = 1; h <= num2; h++) {
+                            $("#tabla").append('<td id="a' + g + '-' + h + '"> </td>');
+                        }
+                        $("#tabla").append("</tr>");
+                    }
+
+
+                    for (p = 1; p <= num1; p++) {
+                        for (o = 1; o <= num2; o++) {
+                            (function (i, j) {
+                                var url = "/p04cs/Control?num1="+i+"&num2="+j;
+                                $.ajax({
+                                    url: url,
+                                    cache: false,
+                                    method: "GET",
+                                    dataType: "json",
+                                    success: function (data) {
+                                        $("#a" + i + "-" + j).append(data);
+                                    },
+                                    error: function (error) {
+                                        $("#alerta").attr("class", "alert alert-danger");
+                                        $("#alerta").empty().append("<h3>ERROR<h3>");
+                                        $("#tabla").empty().append("<h5 class=\"alert alert-danger\">" + error.status + ": " + error.responseText + "</h5>");
+                                    }
+                                });
+                            })(p,o);
+                        }
+                    }
+
+                });
+
+                $("#limpiar").click(function () {
+                    $("#alerta").attr("class", "");
+                    $("#alerta").empty();
+                    $("#tabla").empty();
+                    $("#alto").val('');
+                    $("#ancho").val('');
+                    $("#msgAlto").attr("class", "");
+                    $("#msgAncho").attr("class", "");
+                    $("#msgAlto").empty();
+                    $("#msgAncho").empty();
+                    $("#ancho").css("border-color", "");
+                    $("#alto").css("border-color", "");
+                    $("#crear").attr("disabled", true);
+
+
+                });
+
+            });
+        </script> 
+
+
+    </body>
+</html>
